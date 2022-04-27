@@ -17,8 +17,11 @@ jobs:
       - uses: actions/setup-python@v3
       - run: pip install -r requirements.txt
       - run: python main.py --repository="${{ github.repository }}" --repository_owner="${{ github.repository_owner }}"
-      # TODO: only commit if changed
+      - name: Check Git Status
+        id: status
+        run: git diff --no-ext-diff --quiet --exit-code || echo "::set-output name=status::changed"
       - name: Commit something
+        if: steps.status.outputs.status == 'changed'
         run: |
           git config --global user.name 'Feed Cooker'
           git config --global user.email 'crysheen+feedcooker@gmail.com'
