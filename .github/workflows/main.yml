@@ -22,6 +22,6 @@ jobs:
         run: |
           git config --global user.name 'Feed Cooker'
           git config --global user.email 'crysheen+feedcooker@gmail.com'
-          git add feeds.gen.json
+          git add well-done
           git commit -am "Update feeds"
           git push
