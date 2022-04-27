@@ -8,7 +8,7 @@ from util import logger
 
 class Cooker(object):
     def __init__(self, name: str, repository_owner: str, repository: str, recipe: dict):
-        self.title = recipe["title"]
+        self.title = f"{name} by {repository}"
         self.description = recipe.get("description")
         self.home_page_url = f"https://github.com/{repository}"
         self.feed_url = f"https://github.com/{repository}/well-done/{name}.json"
@@ -17,6 +17,7 @@ class Cooker(object):
 
         self.feeds_urls = recipe["urls"]
 
+    # TODO: async
     def cook(self) -> JSONFeed:
         feed = JSONFeed(
             title=self.title,
