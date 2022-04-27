@@ -1,7 +1,9 @@
 import datetime
+from typing import Type, List
 
 import feedparser
 from jsonfeed import JSONFeed
+from feedgenerator import Atom1Feed, SyndicationFeed
 
 from util import logger
 
@@ -19,17 +21,7 @@ class Cooker(object):
 
         self.feeds_urls = recipe["urls"]
 
-    # TODO: async
-    def cook(self) -> JSONFeed:
-        feed = JSONFeed(
-            title=self.title,
-            link=self.home_page_url,
-            description=self.description,
-            feed_url=self.feed_url,
-            author_name=self.author_name,
-            author_link=self.author_link,
-        )
-
+    def cook(self) -> (JSONFeed, Atom1Feed):
         feed_items = []
         for url in self.feeds_urls:
             logger.debug(f"Fetching {url}")
@@ -48,12 +40,10 @@ class Cooker(object):
                 feed_items.append(self._entry_to_feed_item(f, e))
 
         feed_items.sort(key=lambda x: x['pubdate'], reverse=True)
-        for i in feed_items:
-            feed.add_item(**i)
 
-        logger.debug(f"Final items {feed.num_items()}")
+        logger.debug(f"Final items {len(feed_items)}")
 
-        return feed
+        return self._generate_feed(JSONFeed, feed_items), self._generate_feed(Atom1Feed, feed_items)
 
     # fetch feed from url
     @staticmethod
@@ -110,3 +100,16 @@ class Cooker(object):
 
         logger.debug(f"item: {item}")
         return item
+
+    def _generate_feed(self, gen_cls: Type[SyndicationFeed], items: List[dict]) -> SyndicationFeed:
+        feed = gen_cls(
+            title=self.title,
+            link=self.home_page_url,
+            description=self.description,
+            feed_url=self.feed_url,
+            author_name=self.author_name,
+            author_link=self.author_link,
+        )
+        for i in items:
+            feed.add_item(**i)
+        return feed

@@ -11,9 +11,11 @@ def main(repository: str, repository_owner: str):
             repository_owner=repository_owner,
             recipe=recipes[name],
         )
-        feed = cooker.cook()
+        json_feed, atom_feed = cooker.cook()
         with open(f"./well-done/{name}.json", "w") as f:
-            feed.write(f, "utf-8")
+            json_feed.write(f, "utf-8")
+        with open(f"./well-done/{name}.atom.xml", "w") as f:
+            atom_feed.write(f, "utf-8")
 
 
 if __name__ == "__main__":
