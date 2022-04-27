@@ -9,7 +9,7 @@ def main():
 
     feed = cooker.cook()
     with open("./feeds.gen.json", "w") as f:
-        f.write(json.dumps(feed, indent=2))
+        feed.write(f, "utf-8")
 
 
 if __name__ == "__main__":
