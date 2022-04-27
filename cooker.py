@@ -44,8 +44,7 @@ class Cooker(object):
             for e in entries:
                 feed_items.append(self._entry_to_feed_item(f, e))
 
-        # TODO: sort by date
-        # items.sort(key=lambda x: dateutil.parser.parse(x['date_published']), reverse=True)
+        feed_items.sort(key=lambda x: x['pubdate'], reverse=True)
         for i in feed_items:
             feed.add_item(**i)
 
