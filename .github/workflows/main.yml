@@ -1,0 +1,24 @@
+name: GitHub Actions Demo
+
+# Controls when the workflow will run
+on:
+  push:
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  python-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - run: pip install -r requirements.txt
+      - run: python main.py
+      # TODO: only commit if changed
+      - name: Commit something
+        run: |
+          git config --global user.name 'Action Bot'
+          git config --global user.email 'crysheen+bot@gmail.com'
+          git add feeds.gen.json
+          git commit -am "Update feeds"
+          git push
