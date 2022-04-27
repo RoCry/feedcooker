@@ -53,7 +53,7 @@ class Cooker(object):
 
         feed_items.sort(key=lambda x: x["pubdate"], reverse=True)
 
-        logger.debug(f"Final items {len(feed_items)}")
+        logger.info(f"Final items {len(feed_items)}")
 
         return self._generate_feed(JSONFeed, feed_items), self._generate_feed(
             Atom1Feed, feed_items

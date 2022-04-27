@@ -19,7 +19,7 @@ jobs:
       - run: python main.py --repository="${{ github.repository }}" --repository_owner="${{ github.repository_owner }}"
       - name: Check Git Status
         id: status
-        run: git diff --no-ext-diff --quiet --exit-code || echo "::set-output name=status::changed"
+        run: '[[ -n $(git status -s) ]] && echo "::set-output name=status::changed"'
       - name: Commit something
         if: steps.status.outputs.status == 'changed'
         run: |
