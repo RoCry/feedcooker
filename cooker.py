@@ -1,5 +1,4 @@
 import datetime
-import json
 
 import feedparser
 from jsonfeed import JSONFeed
@@ -8,13 +7,15 @@ from util import logger
 
 
 class Cooker(object):
-    def __init__(self, cfg):
-        self.title = cfg["title"]
-        self.description = cfg.get("description")
-        self.home_page_url = cfg["home_page_url"]
-        self.feed_url = cfg["feed_url"]
+    def __init__(self, name: str, repository_owner: str, repository: str, recipe: dict):
+        self.title = recipe["title"]
+        self.description = recipe.get("description")
+        self.home_page_url = f"https://github.com/{repository}"
+        self.feed_url = f"https://github.com/{repository}/well-done/{name}.json"
+        self.author_name = repository_owner
+        self.author_link = f"https://github.com/{repository_owner}"
 
-        self.feeds_urls = cfg["urls"]
+        self.feeds_urls = recipe["urls"]
 
     def cook(self) -> JSONFeed:
         feed = JSONFeed(
@@ -22,22 +23,31 @@ class Cooker(object):
             link=self.home_page_url,
             description=self.description,
             feed_url=self.feed_url,
+            author_name=self.author_name,
+            author_link=self.author_link,
         )
 
+        feed_items = []
         for url in self.feeds_urls:
             logger.debug(f"Fetching {url}")
+
+            # TODO: support json feed
             try:
-                entries = self._fetch_entries(url)
+                f = self._parse_feed(url)
+                # TODO: use filter instead of hardcode limit
+                entries = f["entries"][:2]
             except Exception as e:
                 logger.error(f"Failed to fetch {url}: {e}")
                 continue
-            logger.debug(f"Fetched {len(entries)} entries from {url}\n{entries}")
+            logger.info(f"Fetched {len(entries)} entries from {url}\n{entries}")
 
             for e in entries:
-                feed.add_item(**self._entry_to_feed_item(e))
+                feed_items.append(self._entry_to_feed_item(f, e))
 
         # TODO: sort by date
         # items.sort(key=lambda x: dateutil.parser.parse(x['date_published']), reverse=True)
+        for i in feed_items:
+            feed.add_item(**i)
 
         logger.debug(f"Final items {feed.num_items()}")
 
@@ -45,14 +55,13 @@ class Cooker(object):
 
     # fetch feed from url
     @staticmethod
-    def _fetch_entries(url):
-        feed = feedparser.parse(url)
-        # TODO: use filter instead of hardcode limit
-        return feed["entries"][:2]
+    def _parse_feed(url):
+        # TODO: improve fetch with ETAG/LAST-MODIFIED
+        return feedparser.parse(url)
 
     # mapping rss/atom entry to JSONFeed item(using in JSONFeed.add_item)
     @staticmethod
-    def _entry_to_feed_item(e) -> dict:
+    def _entry_to_feed_item(feed, e) -> dict:
         item = {
             "title": e["title"],
             "link": e["link"],
@@ -73,21 +82,29 @@ class Cooker(object):
         else:
             item["description"] = ""
 
-        author_detail = e.get("author_detail")
+        author_detail = (
+            e.get("author_detail")
+            if e.get("author_detail")
+            else feed.get("author_detail")
+        )
         if author_detail:
             item["author_name"] = author_detail.get("name")
             item["author_email"] = author_detail.get("email")
             item["author_link"] = author_detail.get("href")
         elif e.get("author"):
             item["author_name"] = e.get("author")
+        elif feed.get("author"):
+            item["author_name"] = feed.get("author")
 
-        pubdate = e.get('published_parsed')
+        pubdate = e.get("published_parsed")
         if pubdate:
             item["pubdate"] = datetime.datetime(*pubdate[:6])
+        else:
+            item["pubdate"] = datetime.datetime.now()
 
-        updateddate = e.get('updated_parsed')
-        if updateddate:
-            item["updateddate"] = datetime.datetime(*updateddate[:6])
+        update = e.get("updated_parsed")
+        if update:
+            item["update"] = datetime.datetime(*update[:6])
 
         logger.debug(f"item: {item}")
         return item
