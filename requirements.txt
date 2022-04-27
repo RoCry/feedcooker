@@ -1,4 +1,5 @@
-feedparser~=6.0.8
 feedgenerator~=2.0.0
 django-jsonfeed~=0.3.1
 fire~=0.4.0
+feedparser~=6.0.2
+requests~=2.25.1

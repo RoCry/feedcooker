@@ -2,6 +2,7 @@ import datetime
 from typing import Type, List
 
 import feedparser
+import requests
 from jsonfeed import JSONFeed
 from feedgenerator import Atom1Feed, SyndicationFeed
 
@@ -21,23 +22,24 @@ class Cooker(object):
 
         self.feeds_urls = recipe["urls"]
 
+        self.session = requests.Session()
+        self.session.headers.update({"User-Agent": "feedcooker 0.1"})
+
     def cook(self) -> (JSONFeed, Atom1Feed):
         feed_items = []
         for url in self.feeds_urls:
             logger.debug(f"Fetching {url}")
 
-            # TODO: support json feed
             try:
-                f = self._parse_feed(url)
+                items = self._fetch_feed_items(url)
                 # TODO: use filter instead of hardcode limit
-                entries = f["entries"][:2]
+                items = items[:2]
+
+                feed_items.extend(items)
             except Exception as e:
                 logger.error(f"Failed to fetch {url}: {e}")
                 continue
-            logger.info(f"Fetched {len(entries)} entries from {url}\n{entries}")
-
-            for e in entries:
-                feed_items.append(self._entry_to_feed_item(f, e))
+            logger.info(f"Fetched {len(items)} entries from {url}\n{items}")
 
         feed_items.sort(key=lambda x: x['pubdate'], reverse=True)
 
@@ -45,11 +47,35 @@ class Cooker(object):
 
         return self._generate_feed(JSONFeed, feed_items), self._generate_feed(Atom1Feed, feed_items)
 
-    # fetch feed from url
-    @staticmethod
-    def _parse_feed(url):
+    def _fetch_url(self, url):
         # TODO: improve fetch with ETAG/LAST-MODIFIED
-        return feedparser.parse(url)
+        resp = self.session.get(url)
+        resp.raise_for_status()
+        return resp
+
+    # fetch feed from url
+    def _fetch_feed_items(self, url) -> List[dict]:
+        resp = self._fetch_url(url)
+
+        content_type = resp.headers['Content-Type']
+        logger.debug(f"content type: {content_type}")
+
+        if content_type.startswith('application/json'):
+            feed = resp.json()
+            logger.debug(f"json feed: {feed}")
+            # TODO: try parse as json feed
+            return []
+
+        f = feedparser.parse(resp.text)
+        if f is None or f["bozo"]:
+            ex = f.get("bozo_exception") if f else "Unknown error"
+            raise Exception(f"Failed to parse feed: {ex}")
+
+        return [self._entry_to_feed_item(f, e) for e in f.entries]
+
+    @staticmethod
+    def _json_feed_to_feed_item(feed: dict, item: dict) -> dict:
+        raise Exception("Not implemented")
 
     # mapping rss/atom entry to JSONFeed item(using in JSONFeed.add_item)
     @staticmethod
