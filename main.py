@@ -11,7 +11,12 @@ def cook_feed():
 
     for url in feeds_cfg["urls"]:
         logger.debug(f"Fetching {url}")
-        i = fetch_items(url)
+        try:
+            i = fetch_items(url)
+        except Exception as e:
+            logger.error(f"Failed to fetch {url}: {e}")
+            continue
+
         logger.debug(f"Fetched {len(i)} items from {url}")
         items.extend(i)
 
