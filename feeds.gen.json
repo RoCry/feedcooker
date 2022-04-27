@@ -1,5 +1,8 @@
 {
   "title": "Feed Cooker",
+  "description": "Feeds for the Feed Cooker",
+  "home_page_url": "https://github.com/RoCry/feedcooker",
+  "feed_url": "https://github.com/RoCry/feedcooker/feeds.gen.json",
   "items": [
     {
       "title": "A Beginner's Guide to Optimism",

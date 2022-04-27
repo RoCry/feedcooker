@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: Cook Feed
 
 # Controls when the workflow will run
 on:
