@@ -42,14 +42,14 @@ class Cooker(object):
             try:
                 items = self._fetch_feed_items(url)
 
-                if self.title_filter:
+                if hasattr(self, "title_filter"):
                     items = [i for i in items if self.title_filter.search(i["title"])]
 
                 feed_items.extend(items)
             except Exception as e:
                 logger.error(f"Failed to fetch {url}: {e}")
                 continue
-            logger.info(f"Fetched {len(items)} entries from {url}\n{items}")
+            logger.info(f"Fetched {len(items)} entries from {url}")
 
         feed_items.sort(key=lambda x: x["pubdate"], reverse=True)
 
