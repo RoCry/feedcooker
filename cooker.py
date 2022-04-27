@@ -51,11 +51,13 @@ class Cooker(object):
                 continue
             logger.info(f"Fetched {len(items)} entries from {url}\n{items}")
 
-        feed_items.sort(key=lambda x: x['pubdate'], reverse=True)
+        feed_items.sort(key=lambda x: x["pubdate"], reverse=True)
 
         logger.debug(f"Final items {len(feed_items)}")
 
-        return self._generate_feed(JSONFeed, feed_items), self._generate_feed(Atom1Feed, feed_items)
+        return self._generate_feed(JSONFeed, feed_items), self._generate_feed(
+            Atom1Feed, feed_items
+        )
 
     def _fetch_url(self, url):
         # TODO: improve fetch with ETAG/LAST-MODIFIED
@@ -67,10 +69,10 @@ class Cooker(object):
     def _fetch_feed_items(self, url) -> List[dict]:
         resp = self._fetch_url(url)
 
-        content_type = resp.headers['Content-Type']
+        content_type = resp.headers["Content-Type"]
         logger.debug(f"content type: {content_type}")
 
-        if content_type.startswith('application/json'):
+        if content_type.startswith("application/json"):
             feed = resp.json()
             return [self._json_feed_to_feed_item(feed, item) for item in feed["items"]]
 
@@ -101,16 +103,16 @@ class Cooker(object):
         else:
             item["description"] = ""
 
-        author_detail = (
-            e.get("author")
-            if e.get("author")
-            else feed.get("author")
-        )
+        author_detail = e.get("author") if e.get("author") else feed.get("author")
         if author_detail:
             item["author_name"] = author_detail.get("name")
             item["author_link"] = author_detail.get("url")
 
-        pubdate = e.get("date_published") if e.get("date_published") else e.get("date_modified")
+        pubdate = (
+            e.get("date_published")
+            if e.get("date_published")
+            else e.get("date_modified")
+        )
         if pubdate:
             item["pubdate"] = dateutil.parser.parse(pubdate)
         else:
@@ -160,20 +162,22 @@ class Cooker(object):
         elif feed.get("author"):
             item["author_name"] = feed.get("author")
 
-        pubdate = e.get("published_parsed")
+        update = e.get("updated_parsed")
+        if update:
+            item["update"] = datetime.datetime(*update[:6])
+
+        pubdate = e.get("published_parsed") if e.get("published_parsed") else update
         if pubdate:
             item["pubdate"] = datetime.datetime(*pubdate[:6])
         else:
             item["pubdate"] = datetime.datetime.now()
 
-        update = e.get("updated_parsed")
-        if update:
-            item["update"] = datetime.datetime(*update[:6])
-
         logger.debug(f"item: {item}")
         return item
 
-    def _generate_feed(self, gen_cls: Type[SyndicationFeed], items: List[dict]) -> SyndicationFeed:
+    def _generate_feed(
+        self, gen_cls: Type[SyndicationFeed], items: List[dict]
+    ) -> SyndicationFeed:
         feed = gen_cls(
             title=self.title,
             link=self.home_page_url,

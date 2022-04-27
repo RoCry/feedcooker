@@ -5,6 +5,6 @@ recipes = {
         ],
         "filter": {
             "title": "2017-1",
-        }
+        },
     },
 }
