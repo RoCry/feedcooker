@@ -12,7 +12,14 @@ from util import logger
 
 
 class Cooker(object):
-    def __init__(self, name: str, repository_owner: str, repository: str, recipe: dict):
+    def __init__(
+        self,
+        name: str,
+        repository_owner: str,
+        repository: str,
+        recipe: dict,
+        limit: int,
+    ):
         self.title = f"{name} by {repository}"
         self.description = recipe.get("description")
         if not self.description:
@@ -23,6 +30,7 @@ class Cooker(object):
         self.author_link = f"https://github.com/{repository_owner}"
 
         self.feeds_urls = recipe["urls"]
+        self.limit = limit
 
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "feedcooker 0.1"})
@@ -45,7 +53,7 @@ class Cooker(object):
                 if hasattr(self, "title_filter"):
                     items = [i for i in items if self.title_filter.search(i["title"])]
 
-                feed_items.extend(items)
+                feed_items.extend(items[: self.limit])
             except Exception as e:
                 logger.error(f"Failed to fetch {url}: {e}")
                 continue
