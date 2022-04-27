@@ -3,6 +3,7 @@ import dateutil.parser
 from typing import Type, List
 
 import feedparser
+import regex
 import requests
 from jsonfeed import JSONFeed
 from feedgenerator import Atom1Feed, SyndicationFeed
@@ -25,6 +26,13 @@ class Cooker(object):
 
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "feedcooker 0.1"})
+        self._setup_filter(recipe.get("filter"))
+
+    def _setup_filter(self, f: dict):
+        if f is None:
+            return
+        if title := f.get("title"):
+            self.title_filter = regex.compile(title)
 
     def cook(self) -> (JSONFeed, Atom1Feed):
         feed_items = []
@@ -33,8 +41,9 @@ class Cooker(object):
 
             try:
                 items = self._fetch_feed_items(url)
-                # TODO: use filter instead of hardcode limit
-                items = items[:2]
+
+                if self.title_filter:
+                    items = [i for i in items if self.title_filter.search(i["title"])]
 
                 feed_items.extend(items)
             except Exception as e:
