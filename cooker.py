@@ -69,7 +69,7 @@ class Cooker(object):
 
     def _fetch_url(self, url):
         # TODO: improve fetch with ETAG/LAST-MODIFIED
-        resp = self.session.get(url)
+        resp = self.session.get(url, timeout=5)
         resp.raise_for_status()
         return resp
 
