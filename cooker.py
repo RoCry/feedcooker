@@ -51,12 +51,12 @@ class Cooker(object):
 
             try:
                 items = self._fetch_feed_items(url)
-                items = self._filter_items(items)
+                items = self._filter_items(url, items)
                 feed_items.extend(items)
             except Exception as e:
                 logger.error(f"Failed to fetch {url}: {e}")
                 continue
-            logger.info(f"Extend {len(items)} entries from {url}")
+            logger.info(f"Extended {len(items)} entries from {url}")
 
         feed_items.sort(key=lambda x: x["pubdate"], reverse=True)
 
@@ -212,7 +212,7 @@ class Cooker(object):
             feed.add_item(**i)
         return feed
 
-    def _filter_items(self, items):
+    def _filter_items(self, url: str, items):
         before_count = len(items)
         if before_count == 0:
             return items
@@ -225,11 +225,11 @@ class Cooker(object):
                 > datetime.datetime.now() - datetime.timedelta(seconds=self.in_seconds)
             ]
             if before_count != len(items):
-                logger.info(f"Filtered {before_count - len(items)} items by date")
+                logger.info(f"-{before_count - len(items)} by date {url}")
                 before_count = len(items)
         if hasattr(self, "title_filter"):
             items = [i for i in items if self.title_filter.search(i["title"])]
             if before_count != len(items):
-                logger.info(f"Filtered {before_count - len(items)} items by title")
+                logger.info(f"-{before_count - len(items)} by title {url}")
 
         return items[: self.limit]
