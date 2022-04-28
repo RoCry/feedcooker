@@ -87,7 +87,9 @@ class Cooker(object):
         resp = self._fetch_url(url)
 
         content_type = resp.headers["Content-Type"]
-        logger.debug(f"content type: {content_type}")
+        logger.debug(f"content type: {content_type}, encoding: {resp.encoding}")
+        if resp.encoding is None:
+            resp.encoding = "utf-8"
 
         if content_type.startswith("application/json"):
             feed = resp.json()
