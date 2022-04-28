@@ -20,6 +20,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: downloads
+        continue-on-error: true
       - run: python main.py --repository="${{ github.repository }}" --repository_owner="${{ github.repository_owner }}"
       - name: Check Git Status
         id: status
@@ -29,6 +30,7 @@ jobs:
         with:
           name: http-cache
           path: downloads
+        continue-on-error: true
       - name: Commit && Push
         if: steps.status.outputs.status == 'changed'
         run: |
