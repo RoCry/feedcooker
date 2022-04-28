@@ -8,7 +8,7 @@ import requests
 from jsonfeed import JSONFeed
 from feedgenerator import Atom1Feed, SyndicationFeed
 
-from util import logger
+from util import logger, try_load_resp, save_resp
 
 
 class Cooker(object):
@@ -66,14 +66,24 @@ class Cooker(object):
             Atom1Feed, feed_items
         )
 
-    def _fetch_url(self, url):
-        # TODO: improve fetch with ETAG/LAST-MODIFIED
-        resp = self.session.get(url, timeout=5)
+    def _fetch_url(self, url: str):
+        headers = {}
+        if last_resp := try_load_resp(url):
+            headers["If-None-Match"] = last_resp.headers.get("ETag")
+            headers["If-Modified-Since"] = last_resp.headers.get("Last-Modified")
+
+        resp = self.session.get(url, timeout=5, headers=headers)
         resp.raise_for_status()
+
+        if resp.status_code == 304 and last_resp:
+            logger.info(f"{url} Not modified")
+            return last_resp
+
+        save_resp(resp)
         return resp
 
     # fetch feed from url
-    def _fetch_feed_items(self, url) -> List[dict]:
+    def _fetch_feed_items(self, url: str) -> List[dict]:
         resp = self._fetch_url(url)
 
         content_type = resp.headers["Content-Type"]
