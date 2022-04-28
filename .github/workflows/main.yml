@@ -19,7 +19,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: downloads
+          name: http-cache
         continue-on-error: true
       - run: python main.py --repository="${{ github.repository }}" --repository_owner="${{ github.repository_owner }}"
       - name: Check Git Status
