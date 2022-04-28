@@ -23,9 +23,6 @@ jobs:
           name: http-cache
           path: downloads
         continue-on-error: true
-      - name: Show downloaded artifact
-        run: 'ls -l && ls -l downloads'
-        continue-on-error: true
       - run: python main.py --repository="${{ github.repository }}" --repository_owner="${{ github.repository_owner }}"
       - name: Check Git Status
         id: status
