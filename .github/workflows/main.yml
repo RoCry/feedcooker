@@ -17,9 +17,13 @@ jobs:
       - uses: actions/setup-python@v3
       - run: pip install -r requirements.txt
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: dawidd6/action-download-artifact@v2
         with:
+          workflow: main.yml
           name: http-cache
+        continue-on-error: true
+      - name: Show downloaded artifact
+        run: 'ls -l downloads'
         continue-on-error: true
       - run: python main.py --repository="${{ github.repository }}" --repository_owner="${{ github.repository_owner }}"
       - name: Check Git Status
