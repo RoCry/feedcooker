@@ -41,6 +41,8 @@ class Cooker(object):
             return
         if title := f.get("title"):
             self.title_filter = regex.compile(title)
+        if in_seconds := f.get("in_seconds"):
+            self.in_seconds = in_seconds
 
     def cook(self) -> (JSONFeed, Atom1Feed):
         feed_items = []
@@ -52,6 +54,14 @@ class Cooker(object):
 
                 if hasattr(self, "title_filter"):
                     items = [i for i in items if self.title_filter.search(i["title"])]
+                if hasattr(self, "pubdate"):
+                    items = [
+                        i
+                        for i in items
+                        if i["date"]
+                        > datetime.datetime.now()
+                        - datetime.timedelta(seconds=self.in_seconds)
+                    ]
 
                 feed_items.extend(items[: self.limit])
             except Exception as e:
