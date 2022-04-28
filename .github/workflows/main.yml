@@ -16,10 +16,19 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v3
       - run: pip install -r requirements.txt
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: downloads
       - run: python main.py --repository="${{ github.repository }}" --repository_owner="${{ github.repository_owner }}"
       - name: Check Git Status
         id: status
         run: '[[ -z $(git status -s) ]] || echo "::set-output name=status::changed"'
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: http-cache
+          path: downloads
       - name: Commit && Push
         if: steps.status.outputs.status == 'changed'
         run: |
