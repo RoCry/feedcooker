@@ -73,6 +73,9 @@ class Cooker(object):
             headers["If-Modified-Since"] = last_resp.headers.get("Last-Modified")
 
         resp = self.session.get(url, timeout=5, headers=headers)
+        if not resp.ok and last_resp:
+            logger.warn(f"{url} failed, using cached response")
+            return last_resp
         resp.raise_for_status()
 
         if resp.status_code == 304 and last_resp:
