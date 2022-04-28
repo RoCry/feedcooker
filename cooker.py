@@ -214,11 +214,11 @@ class Cooker(object):
         if before_count == 0:
             return items
 
-        if hasattr(self, "pubdate"):
+        if hasattr(self, "in_seconds"):
             items = [
                 i
                 for i in items
-                if i["date"]
+                if i["pubdate"]
                 > datetime.datetime.now() - datetime.timedelta(seconds=self.in_seconds)
             ]
             if before_count != len(items):
