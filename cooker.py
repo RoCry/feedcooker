@@ -103,7 +103,7 @@ class Cooker(object):
             ex = f.get("bozo_exception") if f else "Unknown error"
             raise Exception(f"Failed to parse feed: {ex}")
 
-        return [self._entry_to_feed_item(f, e) for e in f.entries]
+        return [self._entry_to_feed_item(f.feed, e) for e in f.entries]
 
     @staticmethod
     def _json_feed_to_feed_item(feed: dict, e: dict) -> dict:
@@ -183,6 +183,8 @@ class Cooker(object):
             item["author_name"] = e.get("author")
         elif feed.get("author"):
             item["author_name"] = feed.get("author")
+        else:
+            item["author_name"] = feed.get("title", e["link"].split("/")[2])
 
         update = e.get("updated_parsed")
         if update:
