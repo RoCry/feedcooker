@@ -3,6 +3,8 @@ name: Cook Feed
 # Controls when the workflow will run
 on:
   push:
+    branches:
+      - deploy
   workflow_dispatch:
 # uncomment to run repeatedly
 #  schedule:
@@ -21,6 +23,7 @@ jobs:
         with:
           workflow: main.yml
           name: http-cache
+          branch: deploy
           path: downloads
         continue-on-error: true
       - run: python main.py --repository="${{ github.repository }}" --repository_owner="${{ github.repository_owner }}"
@@ -40,4 +43,4 @@ jobs:
           git config --global user.email 'crysheen+feedcooker@gmail.com'
           git add well-done
           git commit -am "Update feeds"
-          git push
+          git push origin deploy
