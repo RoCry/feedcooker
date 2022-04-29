@@ -183,8 +183,11 @@ class Cooker(object):
             item["author_name"] = e.get("author")
         elif feed.get("author"):
             item["author_name"] = feed.get("author")
-        else:
+
+        if item.get("author_name") is None:
             item["author_name"] = feed.get("title", e["link"].split("/")[2])
+        else:
+            item["author_name"] = f'{item["author_name"]} from {feed.get("title", e["link"].split("/")[2])}'
 
         update = e.get("updated_parsed")
         if update:
