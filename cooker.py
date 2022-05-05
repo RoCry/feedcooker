@@ -88,7 +88,6 @@ class Cooker(object):
             logger.info(f"{url} Not modified")
             return last_resp
 
-        save_resp(resp)
         return resp
 
     # fetch feed from url
@@ -102,14 +101,18 @@ class Cooker(object):
 
         if content_type.startswith("application/json"):
             feed = resp.json()
-            return [self._json_feed_to_feed_item(feed, item) for item in feed["items"]]
+            results = [self._json_feed_to_feed_item(feed, item) for item in feed["items"]]
+            save_resp(resp)
+            return results
 
         f = feedparser.parse(resp.text)
         if f is None or f["bozo"]:
             ex = f.get("bozo_exception") if f else "Unknown error"
             raise Exception(f"Failed to parse feed: {ex}")
 
-        return [self._entry_to_feed_item(f.feed, e) for e in f.entries]
+        results = [self._entry_to_feed_item(f.feed, e) for e in f.entries]
+        save_resp(resp)
+        return results
 
     @staticmethod
     def _json_feed_to_feed_item(feed: dict, e: dict) -> dict:
