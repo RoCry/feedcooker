@@ -1,4 +1,6 @@
 import datetime
+import random
+
 import dateutil.parser
 from typing import Type, List
 
@@ -30,6 +32,8 @@ class Cooker(object):
         self.author_link = f"https://github.com/{repository_owner}"
 
         self.feeds_urls = recipe["urls"]
+        # fetch in different order
+        random.shuffle(self.feeds_urls)
         self.limit = limit
 
         self.session = requests.Session()
@@ -51,12 +55,14 @@ class Cooker(object):
 
             try:
                 items = self._fetch_feed_items(url)
+                count1 = len(items)
                 items = self._filter_items(url, items)
+                count2 = len(items)
                 feed_items.extend(items)
             except Exception as e:
                 logger.error(f"Failed to fetch {url}: {e}")
                 continue
-            logger.info(f"Extended {len(items)} entries from {url}")
+            logger.info(f"{url} {count1}/{count2} items")
 
         feed_items.sort(key=lambda x: x["pubdate"], reverse=True)
 
@@ -230,11 +236,11 @@ class Cooker(object):
                 > datetime.datetime.now() - datetime.timedelta(seconds=self.in_seconds)
             ]
             if before_count != len(items):
-                logger.info(f"-{before_count - len(items)} by date {url}")
+                logger.debug(f"-{before_count - len(items)} by date {url}")
                 before_count = len(items)
         if hasattr(self, "title_filter"):
             items = [i for i in items if self.title_filter.search(i["title"])]
             if before_count != len(items):
-                logger.info(f"-{before_count - len(items)} by title {url}")
+                logger.debug(f"-{before_count - len(items)} by title {url}")
 
         return items[: self.limit]
