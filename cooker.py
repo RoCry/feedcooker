@@ -101,7 +101,9 @@ class Cooker(object):
 
         if content_type.startswith("application/json"):
             feed = resp.json()
-            results = [self._json_feed_to_feed_item(feed, item) for item in feed["items"]]
+            results = [
+                self._json_feed_to_feed_item(feed, item) for item in feed["items"]
+            ]
             save_resp(resp)
             return results
 
@@ -196,7 +198,9 @@ class Cooker(object):
         if item.get("author_name") is None:
             item["author_name"] = feed.get("title", e["link"].split("/")[2])
         else:
-            item["author_name"] = f'{item["author_name"]} from {feed.get("title", e["link"].split("/")[2])}'
+            item[
+                "author_name"
+            ] = f'{item["author_name"]} from {feed.get("title", e["link"].split("/")[2])}'
 
         update = e.get("updated_parsed")
         if update:
