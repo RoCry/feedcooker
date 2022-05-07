@@ -6,7 +6,7 @@ from typing import Optional
 import requests
 
 logging.basicConfig(
-    level=os.environ.get("LOGLEVEL", logging.INFO).upper(),
+    level=os.environ.get("LOGLEVEL", logging.INFO),
     format="%(asctime)s %(name)s - [%(levelname)s] > %(message)s",
 )
 logger = logging.getLogger("feedcooker")
