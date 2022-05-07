@@ -5,11 +5,11 @@ import dateutil.parser
 from typing import Type, List
 
 import feedparser
-import regex
 import requests
 from jsonfeed import JSONFeed
 from feedgenerator import Atom1Feed, SyndicationFeed
 
+from filter import TitleFilter, TimeFilter
 from util import logger, try_load_resp, save_resp
 
 
@@ -41,12 +41,19 @@ class Cooker(object):
         self._setup_filter(recipe.get("filter"))
 
     def _setup_filter(self, f: dict):
+        self.filters = []
         if f is None:
             return
         if title := f.get("title"):
-            self.title_filter = regex.compile(title)
+            self.filters.append(
+                TitleFilter(
+                    pattern=title,
+                    case_sensitive=f.get("case_sensitive", False),
+                    invert=f.get("invert", False),
+                )
+            )
         if in_seconds := f.get("in_seconds"):
-            self.in_seconds = in_seconds
+            self.filters.append(TimeFilter(in_seconds=in_seconds))
 
     def cook(self) -> (JSONFeed, Atom1Feed):
         feed_items = []
@@ -231,23 +238,13 @@ class Cooker(object):
         return feed
 
     def _filter_items(self, url: str, items):
-        before_count = len(items)
-        if before_count == 0:
+        if len(items) == 0:
             return items
 
-        if hasattr(self, "in_seconds"):
-            items = [
-                i
-                for i in items
-                if i["pubdate"]
-                > datetime.datetime.now() - datetime.timedelta(seconds=self.in_seconds)
-            ]
-            if before_count != len(items):
-                logger.debug(f"-{before_count - len(items)} by date {url}")
-                before_count = len(items)
-        if hasattr(self, "title_filter"):
-            items = [i for i in items if self.title_filter.search(i["title"])]
-            if before_count != len(items):
-                logger.debug(f"-{before_count - len(items)} by title {url}")
+        for f in self.filters:
+            count = len(items)
+            items = f.filter_items(items)
+            if count != len(items):
+                logger.debug(f"-{count - len(items)} by {f.__class__.__name__} {url}")
 
         return items[: self.limit]

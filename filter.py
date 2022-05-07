@@ -31,4 +31,6 @@ class TimeFilter(Filter):
         if "pubdate" not in item:
             return False
 
-        return item["pubdate"] > datetime.datetime.now() - datetime.timedelta(seconds=self.in_seconds)
+        return item["pubdate"] > datetime.datetime.now() - datetime.timedelta(
+            seconds=self.in_seconds
+        )
