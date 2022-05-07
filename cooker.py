@@ -9,7 +9,7 @@ import requests
 from jsonfeed import JSONFeed
 from feedgenerator import Atom1Feed, SyndicationFeed
 
-from filter import TitleFilter, TimeFilter
+from filter import Filter
 from util import logger, try_load_resp, save_resp
 
 
@@ -38,22 +38,7 @@ class Cooker(object):
 
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "feedcooker 0.1"})
-        self._setup_filter(recipe.get("filter"))
-
-    def _setup_filter(self, f: dict):
-        self.filters = []
-        if f is None:
-            return
-        if title := f.get("title"):
-            self.filters.append(
-                TitleFilter(
-                    pattern=title,
-                    case_sensitive=f.get("case_sensitive", False),
-                    invert=f.get("invert", False),
-                )
-            )
-        if in_seconds := f.get("in_seconds"):
-            self.filters.append(TimeFilter(in_seconds=in_seconds))
+        self.filters = Filter.from_dicts(recipe.get("filters"))
 
     def cook(self) -> (JSONFeed, Atom1Feed):
         feed_items = []

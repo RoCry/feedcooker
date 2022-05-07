@@ -1,9 +1,32 @@
 import datetime
+from typing import List, Optional
 
 from regex import regex
 
 
 class Filter(object):
+    @classmethod
+    def from_dicts(cls, filters: Optional[List[dict]]):
+        if not filters:
+            return []
+        return [cls.from_dict(**d) for d in filters if d]
+
+    @classmethod
+    def from_dict(cls, **kwargs):
+        if len(kwargs.items()) == 0:
+            raise ValueError("No arguments provided")
+
+        if title := kwargs.get("title"):
+            return TitleFilter(
+                pattern=title,
+                case_sensitive=kwargs.get("case_sensitive", False),
+                invert=kwargs.get("invert", False),
+            )
+        if in_seconds := kwargs.get("in_seconds"):
+            return TimeFilter(in_seconds=in_seconds)
+
+        raise ValueError(f"Unknown filter: {kwargs}")
+
     def predicate_item(self, item):
         raise NotImplementedError
 
