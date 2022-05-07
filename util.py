@@ -6,14 +6,12 @@ from typing import Optional
 import requests
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s %(name)s - [%(levelname)s] > %(message)s"
+    level=os.environ.get("LOGLEVEL", logging.INFO).upper(),
+    format="%(asctime)s %(name)s - [%(levelname)s] > %(message)s",
 )
 logger = logging.getLogger("feedcooker")
 
 cache_folder = "./downloads"
-
-
-# logger.setLevel(logging.DEBUG)
 
 
 def _url_to_valid_filename(url: str) -> str:
