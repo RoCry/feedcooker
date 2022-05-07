@@ -1,3 +1,5 @@
+![ci](https://github.com/RoCry/feedcooker/actions/workflows/ci.yml/badge.svg)
+
 # feedcooker
 Cook multi feeds into one using GitHub Actions.
 
