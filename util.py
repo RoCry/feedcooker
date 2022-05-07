@@ -13,7 +13,7 @@ logger = logging.getLogger("feedcooker")
 cache_folder = "./downloads"
 
 
-# logger.setLevel(logging.INFO)
+# logger.setLevel(logging.DEBUG)
 
 
 def _url_to_valid_filename(url: str) -> str:
