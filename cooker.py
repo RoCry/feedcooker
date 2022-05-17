@@ -91,7 +91,7 @@ class Cooker(object):
         if resp.encoding is None:
             resp.encoding = "utf-8"
 
-        if content_type.startswith("application/json"):
+        if content_type.startswith("application/json") or url.endswith(".json"):
             feed = resp.json()
             results = [
                 self._json_feed_to_feed_item(feed, item) for item in feed["items"]
