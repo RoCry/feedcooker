@@ -16,7 +16,9 @@ def test_title_filter():
 
     f = Filter.from_dict(title="\p{Han}{8,}|.{32,}")
     assert not f.predicate_item({"title": "你好"})
-    assert f.predicate_item({"title": "show me the money operation cwal black sheep wall"})
+    assert f.predicate_item(
+        {"title": "show me the money operation cwal black sheep wall"}
+    )
     assert not f.predicate_item({"title": "show me the money operation"})
     assert f.predicate_item({"title": "你好烦诶哦服务金额发"})
     assert f.predicate_item({"title": "hello 你好烦诶哦服务金额发"})

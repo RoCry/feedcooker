@@ -229,7 +229,10 @@ class Cooker(object):
         for f in self.filters:
             count = len(items)
             items = f.filter_items(items)
-            if count != len(items):
-                logger.debug(f"-{count - len(items)} by {f.__class__.__name__} {url}")
+            after_count = len(items)
+            if count != after_count:
+                logger.debug(
+                    f"-{count - after_count}->{after_count} by {f.__class__.__name__} {url}"
+                )
 
         return items[: self.limit]
