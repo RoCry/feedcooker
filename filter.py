@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import List, Optional
 
 from regex import regex
@@ -54,6 +54,7 @@ class TimeFilter(Filter):
         if "pubdate" not in item:
             return False
 
-        return item["pubdate"] > datetime.datetime.now() - datetime.timedelta(
-            seconds=self.in_seconds
+        return (
+            datetime.timestamp(datetime.now()) - datetime.timestamp(item["pubdate"])
+            < self.in_seconds
         )
