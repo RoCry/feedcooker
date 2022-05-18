@@ -11,7 +11,6 @@ Cook multi feeds into one using GitHub Actions.
 
 # Pending Features
 
-- [ ] `.opml` files as recipe
 - [ ] Metrics for inactive/dead feeds
 - [ ] `async` to improve performance
 - [ ] Merge items (summary for multi items)

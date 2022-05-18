@@ -1,9 +1,11 @@
-from recipes import recipes
+from recipes import get_recipes
 from cooker import Cooker
 import fire
 
 
 def main(repository: str, repository_owner: str, limit=20):
+    recipes = get_recipes()
+
     for name in recipes:
         cooker = Cooker(
             name=name,

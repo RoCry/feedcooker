@@ -1,4 +1,9 @@
-recipes = {
+import operator
+from functools import reduce
+
+import listparser
+
+_recipes = {
     # you need change the name, demo will be ignored by default
     "demo": {
         "urls": [
@@ -19,3 +24,37 @@ recipes = {
         ######################################################################
     },
 }
+
+
+def get_recipes() -> [dict]:
+    recipes = {}
+    for name, recipe in _recipes.items():
+        for sub_name, r in _fulfill_opml_recipe(name, recipe).items():
+            recipes[sub_name] = r
+    return recipes
+
+
+# change the recipe with opml url to multi recipes
+def _fulfill_opml_recipe(name: str, recipe: dict) -> dict:
+    if "opml" not in recipe:
+        return {name: recipe}
+
+    result = listparser.parse(recipe["opml"])
+    del recipe["opml"]
+
+    feeds = {}
+    for f in result.feeds:
+        categories = (
+            ["uncategorized"]
+            if not f.categories
+            else reduce(operator.concat, f.categories)
+        )
+        for c in categories:
+            feeds[c] = feeds.get(c, []) + [f.url]
+
+    results = {}
+    for key, urls in feeds.items():
+        r = recipe.copy()
+        r["urls"] = urls
+        results[f"{name}_{key}"] = r
+    return results
