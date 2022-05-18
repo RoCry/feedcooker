@@ -14,12 +14,12 @@ logger = logging.getLogger("feedcooker")
 cache_folder = "./downloads"
 
 
-def _url_to_valid_filename(url: str) -> str:
+def url_to_valid_filename(url: str) -> str:
     return url.replace("/", "_").replace(":", "_").replace("?", "_")
 
 
 def try_load_resp(url: str) -> Optional[requests.Response]:
-    key = _url_to_valid_filename(url)
+    key = url_to_valid_filename(url)
     try:
         with open(os.path.join(cache_folder, key), "rb") as f:
             return pickle.load(f)
@@ -30,6 +30,6 @@ def try_load_resp(url: str) -> Optional[requests.Response]:
 def save_resp(resp: requests.Response):
     os.makedirs(cache_folder, exist_ok=True)
 
-    key = _url_to_valid_filename(resp.url)
+    key = url_to_valid_filename(resp.url)
     with open(os.path.join(cache_folder, key), "wb") as f:
         pickle.dump(resp, f)
