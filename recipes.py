@@ -59,5 +59,5 @@ def _fulfill_opml_recipe(name: str, recipe: dict) -> dict:
         r["urls"] = urls
         all_urls.update(urls)
         results[f"{name}_{key}"] = r
-    results[name] = all_urls
+    results[name] = list(all_urls)
     return results
