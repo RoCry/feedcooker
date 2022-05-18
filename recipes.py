@@ -53,8 +53,11 @@ def _fulfill_opml_recipe(name: str, recipe: dict) -> dict:
             feeds[c] = feeds.get(c, []) + [f.url]
 
     results = {}
+    all_urls = set()
     for key, urls in feeds.items():
         r = recipe.copy()
         r["urls"] = urls
+        all_urls.update(urls)
         results[f"{name}_{key}"] = r
+    results[name] = all_urls
     return results
