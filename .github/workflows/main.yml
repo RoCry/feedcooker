@@ -39,4 +39,4 @@ jobs:
         with:
           tag_name: latest
           draft: false
-          files: "${{ env.FEEDS_FILES }}"
+          files: "${{ env.FEED_FILES }}"
