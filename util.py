@@ -42,3 +42,8 @@ def put_github_action_env(key: str, value: str):
 
     with open(env_file, "a") as f:
         f.write(f"{key}<<EOF\n{value}\nEOF\n")
+
+
+def xml_escape(s: str) -> str:
+    from xml.sax.saxutils import escape
+    return escape(s, {"'": "&apos;", '"': "&quot;"})
