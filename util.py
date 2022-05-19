@@ -15,7 +15,7 @@ cache_folder = "./downloads"
 
 
 def url_to_valid_filename(url: str) -> str:
-    return url.replace("/", "_").replace(":", "_").replace("?", "_")
+    return url.replace("/", "_").replace(":", "_").replace("?", "_").replace(" ", "_")
 
 
 def try_load_resp(url: str) -> Optional[requests.Response]:
