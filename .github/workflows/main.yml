@@ -28,20 +28,15 @@ jobs:
           path: downloads
         continue-on-error: true
       - run: python main.py --repository="${{ github.repository }}" --repository_owner="${{ github.repository_owner }}"
-      - name: Check Git Status
-        id: status
-        run: '[[ -z $(git status -s) ]] || echo "::set-output name=status::changed"'
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: http-cache
           path: downloads
         continue-on-error: true
-      - name: Commit && Push
-        if: steps.status.outputs.status == 'changed'
-        run: |
-          git config --global user.name 'Feed Cooker'
-          git config --global user.email 'crysheen+feedcooker@gmail.com'
-          git add well-done
-          git commit -am "Update feeds"
-          git push origin deploy
+      - name: Update release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          draft: false
+          files: "${{ env.FEEDS_FILES }}"

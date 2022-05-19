@@ -33,3 +33,12 @@ def save_resp(resp: requests.Response):
     key = url_to_valid_filename(resp.url)
     with open(os.path.join(cache_folder, key), "wb") as f:
         pickle.dump(resp, f)
+
+
+def put_github_action_env(key: str, value: str):
+    env_file = os.getenv('GITHUB_ENV')
+    if env_file is None:
+        raise Exception("GITHUB_ENV is not set")
+
+    with open(env_file, "a") as f:
+        f.write(f"{key}<<EOF\n{value}\nEOF\n")
