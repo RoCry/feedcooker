@@ -23,7 +23,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: main.yml
-          name: http-cache
+          name: http-cache-v2
           branch: deploy
           path: downloads
         continue-on-error: true
@@ -31,7 +31,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: http-cache
+          name: http-cache-v2
           path: downloads
         continue-on-error: true
       - name: Update release
