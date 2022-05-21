@@ -3,8 +3,8 @@ from functools import reduce
 
 import listparser
 
+# change the demo recipe to what you want to use
 _recipes = {
-    # you need change the name, demo will be ignored by default
     "demo": {
         "urls": [
             "https://aws.amazon.com/blogs/big-data/feed/",

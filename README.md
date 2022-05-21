@@ -1,13 +1,14 @@
 [![ci](https://github.com/RoCry/feedcooker/actions/workflows/ci.yml/badge.svg)](https://github.com/RoCry/feedcooker/actions)
 
 # feedcooker
+
 Cook multi feeds into one using GitHub Actions.
 
 # Setup
 
-- Fork or create new repo with the template.
-- Update `recipes.py`
-- Push to deploy
+- Fork repo, and you may need to turn on GitHub Actions for your forked repo
+- Update `_recipe` in `recipes.py`
+- Commit and push to `deploy` branch
 
 # Pending Features
 
