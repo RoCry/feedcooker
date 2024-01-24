@@ -1079,6 +1079,7 @@ _recipes = {
             "https://github.com/xslim.atom",
             "https://github.com/zhongqiangwu960812.atom",
             "https://github.com/bumony.atom",
+            "https://github.com/ohdarling.atom",
         ],
         "filters": [
             {"in_seconds": 3600 * 7 * 24},
