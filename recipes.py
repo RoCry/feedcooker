@@ -1088,7 +1088,7 @@ _recipes = {
         "filters": [
             {"in_seconds": 3600 * 7 * 24},
             {
-                "title": "commented on|closed an issue|opened an issue|merged a pull request|pushed to|deleted branch",
+                "title": "commented on|closed an issue|opened an issue|merged a pull request|pushed to|deleted branch|created a tag|created a branch",
                 "invert": True,
             },
         ],
