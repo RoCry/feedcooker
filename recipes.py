@@ -1089,6 +1089,8 @@ _recipes = {
             "https://github.com/vroland.atom",
             "https://github.com/septs.atom",
             "https://github.com/mo10.atom",
+            "https://github.com/freedom10086.atom",
+            "https://github.com/antirez.atom",
         ],
         "filters": [
             {"in_seconds": 3600 * 7 * 24},
