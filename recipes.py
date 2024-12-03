@@ -1113,6 +1113,7 @@ _recipes = {
             "https://github.com/Fescron.atom",
             "https://github.com/Ymriri.atom",
             "https://github.com/Cjiio.atom",
+            "https://github.com/Forairaaaaa.atom",
         ],
         "filters": [
             {"in_seconds": 3600 * 7 * 24},
